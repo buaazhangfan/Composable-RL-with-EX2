@@ -19,7 +19,7 @@ class SimpleSampleLayer():
     
     def get_output_for(self, input, deterministic=False):
         mu, log_var = input
-        eps = self._srng.normal(mu.shape)
+        eps = self._srng.normal(size = mu.shape)
         z = mu + tf.exp(0.5 * log_var) * eps
         if deterministic:
             z = mu

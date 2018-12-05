@@ -1,7 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from ex2.utils.distributions import log_stdnormal, log_normal2, log_bernoulli, kl_normal2_stdnormal
-from ex2.utils.theano_utils import compile_timer
+
 
 
 def sample_batch(data, data_size, batch_size):
@@ -28,15 +27,10 @@ class SimpleSampleLayer():
 
 
 class MLP():
-    def __init__(self, input_layer, output_dim, hidden_sizes,
-                 hidden_act=tf.tanh,
-                 output_act=tf.identity,
-                 params=None,
-                 batch_norm=False,
-                 dropout=False):
-        
+    def __init__(self, input_layer, output_dim, hidden_sizes, hidden_act=tf.tanh, output_act=tf.identity, params=None, batch_norm=False, dropout=False):
+		
 		out_layer = input_layer
-        param_idx = 0
+		param_idx = 0
 
         for hidden_size in hidden_sizes:
 
@@ -52,6 +46,7 @@ class MLP():
         out_layer = tf.layers.dense(out_layer, output_dim, activation=output_act)
 
         self.out_layer = out_layer
+
     def before_sig_layer(self):
 		return self.before_sig_layer
 
@@ -110,6 +105,7 @@ class Siamese:
 		self.vae_before_sig_output = self.class_net.before_sig_layer()
 
 		self.loss = self.latent_gaussian_x_bernoulli(combined_z, combined_z_mu, combined_z_log_var, self.vae_before_sig_output, self.label, kl_weight)
+		self.loss *= -1
 
 	def kl_normal2_stdnormal(mean, log_var):
 
@@ -126,3 +122,4 @@ class Siamese:
 
 		return Loss
 	
+

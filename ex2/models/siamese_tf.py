@@ -100,14 +100,16 @@ class Siamese:
         l1_z = SimpleSampleLayer(l1_mu, l1_log_var)
         l2_z = SimpleSampleLayer(l2_mu, l2_log_var)
 
-        combined_z = tf.concat([l1_z, l2_z], axis = -1)
+        combined_z = tf.concat([l1_z, l2_z], axis = 1)
+		combined_z_mu = tf.concat([l1_mu, l2_mu], axis = 1)
+		combined_z_log_var = tf.concat([l1_log_var, l2_log_var], axis = 1)
 
         self.class_net = MLP(combined_z, 1, hidden_sizes, hidden_act=hidden_act, output_act=tf.sigmoid)
 
         self.vae_output = self.class_net.output_layer()
 		self.vae_before_sig_output = self.class_net.before_sig_layer()
 
-		self.loss = self.latent_gaussian_x_bernoulli()
+		self.loss = self.latent_gaussian_x_bernoulli(combined_z, combined_z_mu, combined_z_log_var, self.vae_before_sig_output, self.label, kl_weight)
 
 	def kl_normal2_stdnormal(mean, log_var):
 

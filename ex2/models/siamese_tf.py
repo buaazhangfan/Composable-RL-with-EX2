@@ -46,7 +46,8 @@ class MLP():
                 out_layer = tf.layers.batch_normalization(out_layer)
             if dropout:
                 out_layer = tf.layers.dropout(out_layer)
-        
+
+		self.last_layer = out_layer
         out_layer = tf.layers.dense(out_layer, output_dim, activation=output_act)
 
         self.out_layer = out_layer
@@ -99,4 +100,11 @@ class Siamese:
 
         self.class_net = MLP(combined_z, 1, hidden_sizes, hidden_act=hidden_act, output_act=tf.sigmoid)
 
-        self.vae_output = self.class_net.output_layer
+        self.vae_output = self.class_net.output_layer()
+
+	def kl_normal2_stdnormal(mean, log_var):
+
+		return -0.5 * (1 + log_var - mean ** 2 - tf.exp(log_var))
+
+	def log_bernoulli(output, label, eps=0.0):
+		vae_output = tf.clip_by_value(output, eps, 1.0 - eps)

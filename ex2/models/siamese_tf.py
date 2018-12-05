@@ -55,16 +55,16 @@ class MLP():
 
 
 class Siamese:
-    def __init__(self, input_dim, feature_dim, hidden_sizes,
+    def __init__(self,input_dim, feature_dim, hidden_sizes,
                  l2_reg=0, hidden_act=tf.tanh, learning_rate=1e-4,
                  kl_weight=1,
                  batch_norm=False,
                  use_cos=False,
-                 dropout=False,
-                 env_name='Maze'):
+                 dropout=False):
         
         self.input_dim = input_dim
         self.env_name = env_name
+		self.learning_rate = learning_rate
 
         # Define Placeholder(input)
         self.lin1 = tf.placeholder(tf.float64, [None, input_dim])
@@ -106,6 +106,7 @@ class Siamese:
 
 		self.loss = self.latent_gaussian_x_bernoulli(combined_z, combined_z_mu, combined_z_log_var, self.vae_before_sig_output, self.label, kl_weight)
 		self.loss *= -1
+		self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(self.loss)
 
 	def kl_normal2_stdnormal(mean, log_var):
 
@@ -121,5 +122,26 @@ class Siamese:
 		Loss = tf.reduce_mean((-kl_term) * kl_weight + log_px_given_z)
 
 		return Loss
+
+	def init_tf_sess(self):
+		tf.config = tf.ConfigProto(inter_op_parallelism_threads=1, intra_op_parallelism_threads=1)
+		tf_config.gpu_options.allow_growth = True
+		self.sess = tf.Session(config=tf_config)
+		self.sess.__enter__()
+		tf.global_variables_initializer().run()
+	
+	def train(self, input_train_1, input_train_2, label_train):
+		_, loss = self.sess.run([self.optimizer, self.loss], feed_dict = {self.lin1 = input_train_1, self.lin2 = input_train_2, self.label = label_train})
+
+		return loss
+	
+	def predict(self, input_1, input_2):
+
+		dis_output = self.sess.run(self.vae_output, feed_dict = {self.lin1 = input_1, self.lin2 = input_2})
+
+		return dis_output
+
+
+
 	
 

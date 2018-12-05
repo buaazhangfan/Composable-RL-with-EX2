@@ -10,24 +10,17 @@ import tensorflow as tf
 
 class SimpleSampleLayer():
 
-	def __init__(self, mean, log_var, seed=np.random.randint(1, 2147462579), **kwargs):
+	def __init__(self, mean, log_var, seed=np.random.randint(1, 2147462579)):
 		
 		self._srng = np.random.RandomState(seed=seed)
-		
 		self.mean = mean
-
 		self.log_var = log_var
+
+	def get_output_for(self):
 	
-	def get_output_for(self, deterministic=False):
-
-		mu = self.mean
-		log_var = self.log_var
-		eps = self._srng.normal(size=mu.shape)
-		z = mu + tf.exp(0.5 * log_var) * eps
-		if deterministic:
-			z = mu
-
-		return z
+		# eps = self._srng.normal(size=self.mean.shape)
+		eps = tf.random_normal(shape = tf.shape(self.mean))
+		return self.mean + tf.exp(0.5 * self.log_var) * eps
 
 
 class MLP():
@@ -45,14 +38,12 @@ class MLP():
 				out_layer = tf.layers.batch_normalization(out_layer)
 			if dropout:
 				out_layer = tf.layers.dropout(out_layer)
-
-		self.before_sig_layer = out_layer
-		out_layer = tf.layers.dense(out_layer, output_dim, activation=output_act)
-
-		self.out_layer = out_layer
-
-	def before_sig_layer(self):
-		return self.before_sig_layer
+		
+		if output_act is tf.sigmoid:
+			self.before_sig = tf.layers.dense(out_layer, output_dim, activation=tf.identity)
+			self.out_layer = tf.sigmoid(self.before_sig)
+		else:
+			self.out_layer = tf.layers.dense(out_layer, output_dim, activation=output_act)
 
 	def output_layer(self):
 		return self.out_layer
@@ -63,32 +54,35 @@ class Siamese:
 				 l2_reg=0, hidden_act=tf.tanh, learning_rate=1e-4,
 				 kl_weight=1,
 				 batch_norm=False,
-				 use_cos=False,
 				 dropout=False):
 		
 		self.input_dim = input_dim
-		self.env_name = env_name
+		self.feature_dim = feature_dim
+		self.hidden_sizes = hidden_sizes
+		self.hidden_act = hidden_act
 		self.learning_rate = learning_rate
+		self.batch_norm = batch_norm
+		self.dropout = dropout
+		self.kl_weight = kl_weight
+	
+	def build_graph(self):
 
 		# Define Placeholder(input)
-		self.lin1 = tf.placeholder(tf.float64, [None, input_dim])
-		self.lin2 = tf.placeholder(tf.float64, [None, input_dim])
-		self.label = tf.placeholder(tf.float64, [None, 1])
+		self.lin1 = tf.placeholder(tf.float32, [None, self.input_dim])
+		self.lin2 = tf.placeholder(tf.float32, [None, self.input_dim])
+		self.label = tf.placeholder(tf.float32, [None, 1])
 
-		self.base1 = MLP(self.lin1, hidden_sizes[0], hidden_sizes,
-						 hidden_act, hidden_act, batch_norm=batch_norm)
-		self.base2 = MLP(self.lin2, hidden_sizes[0], hidden_sizes,
-						 hidden_act, hidden_act, batch_norm=batch_norm,
-						 dropout=dropout)
+		self.base1 = MLP(self.lin1, self.hidden_sizes[0], self.hidden_sizes, self.hidden_act, self.hidden_act, batch_norm=self.batch_norm)
+		self.base2 = MLP(self.lin2, self.hidden_sizes[0], self.hidden_sizes, self.hidden_act, self.hidden_act, batch_norm=self.batch_norm, dropout=self.dropout)
 		
 		l1_enc_h2 = self.base1.output_layer()
 		l2_enc_h2 = self.base2.output_layer()
 
-		self.mean_net1 = MLP(l1_enc_h2, feature_dim, hidden_sizes, hidden_act)
-		self.mean_net2 = MLP(l2_enc_h2, feature_dim, hidden_sizes, hidden_act, dropout=dropout)
+		self.mean_net1 = MLP(l1_enc_h2, self.feature_dim, self.hidden_sizes, self.hidden_act)
+		self.mean_net2 = MLP(l2_enc_h2, self.feature_dim, self.hidden_sizes, self.hidden_act, dropout=self.dropout)
 
-		self.logvar_net1 = MLP(l1_enc_h2, feature_dim, hidden_sizes, hidden_act)
-		self.logvar_net2 = MLP(l2_enc_h2, feature_dim, hidden_sizes, hidden_act, dropout=dropout)
+		self.logvar_net1 = MLP(l1_enc_h2, self.feature_dim, self.hidden_sizes, self.hidden_act)
+		self.logvar_net2 = MLP(l2_enc_h2, self.feature_dim, self.hidden_sizes, self.hidden_act, dropout=self.dropout)
 
 		l1_mu = self.mean_net1.output_layer()
 		l1_log_var = self.logvar_net1.output_layer()
@@ -96,8 +90,8 @@ class Siamese:
 		l2_mu = self.mean_net2.output_layer()
 		l2_log_var = self.logvar_net2.output_layer()
 
-		l1_z = SimpleSampleLayer(l1_mu, l1_log_var).get_output_for()
-		l2_z = SimpleSampleLayer(l2_mu, l2_log_var).get_output_for()
+		l1_z = SimpleSampleLayer(mean=l1_mu, log_var=l1_log_var).get_output_for()
+		l2_z = SimpleSampleLayer(mean=l2_mu, log_var=l2_log_var).get_output_for()
 
 		
 
@@ -105,24 +99,25 @@ class Siamese:
 		combined_z_mu = tf.concat([l1_mu, l2_mu], axis = 1)
 		combined_z_log_var = tf.concat([l1_log_var, l2_log_var], axis = 1)
 
-		self.class_net = MLP(combined_z, 1, hidden_sizes, hidden_act=hidden_act, output_act=tf.sigmoid)
+		self.class_net = MLP(combined_z, 1, self.hidden_sizes, hidden_act=self.hidden_act, output_act=tf.sigmoid)
 
 		self.vae_output = self.class_net.output_layer()
-		self.vae_before_sig_output = self.class_net.before_sig_layer()
 
-		self.loss = self.latent_gaussian_x_bernoulli(combined_z, combined_z_mu, combined_z_log_var, self.vae_before_sig_output, self.label, kl_weight)
+		self.vae_before_sig_output = self.class_net.before_sig
+
+		self.loss = self.latent_gaussian_x_bernoulli(combined_z, combined_z_mu, combined_z_log_var, self.vae_before_sig_output, self.label, self.kl_weight)
 		self.loss *= -1
 		self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(self.loss)
 
-	def kl_normal2_stdnormal(mean, log_var):
+	def kl_normal2_stdnormal(self, mean, log_var):
 
 		return -0.5 * (1 + log_var - mean ** 2 - tf.exp(log_var))
 
-	def log_bernoulli(output, label, eps=0.0):
+	def log_bernoulli(self, output, label, eps=0.0):
 
 		return - tf.nn.sigmoid_cross_entropy_with_logits(labels=label, logits=output)
 
-	def latent_gaussian_x_bernoulli(z, z_mu, z_log_var, output, label, kl_weight):
+	def latent_gaussian_x_bernoulli(self, z, z_mu, z_log_var, output, label, kl_weight):
 		kl_term = tf.reduce_sum(self.kl_normal2_stdnormal(z_mu, z_log_var),axis = 1)
 		log_px_given_z = tf.reduce_sum(self.log_bernoulli(output, label, eps=1e-6), axis = 1)
 		Loss = tf.reduce_mean((-kl_term) * kl_weight + log_px_given_z)
@@ -130,7 +125,7 @@ class Siamese:
 		return Loss
 
 	def init_tf_sess(self):
-		tf.config = tf.ConfigProto(inter_op_parallelism_threads=1, intra_op_parallelism_threads=1)
+		tf_config = tf.ConfigProto(inter_op_parallelism_threads=1, intra_op_parallelism_threads=1)
 		tf_config.gpu_options.allow_growth = True
 		self.sess = tf.Session(config=tf_config)
 		self.sess.__enter__()
@@ -144,8 +139,9 @@ class Siamese:
 	def predict(self, input_1, input_2):
 
 		dis_output = self.sess.run(self.vae_output, feed_dict = {self.lin1: input_1, self.lin2: input_2})
-
-		return dis_output
+		dis_output = np.clip(np.squeeze(dis_output), 1e-5, 1-1e-5)
+		prob = (1 - dis_output) / (dis_output)
+		return prob
 
 
 

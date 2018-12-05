@@ -3,14 +3,15 @@ import tensorflow as tf
 
 
 
-def sample_batch(data, data_size, batch_size):
-    idxs = np.random.randint(data_size, size=batch_size)
+# def sample_batch(data, data_size, batch_size):
+#     idxs = np.random.randint(data_size, size=batch_size)
 
-    return data[idxs]
+#     return data[idxs]
 
 class SimpleSampleLayer():
 
     def __init__(self, mean, log_var, seed=np.random.randint(1, 2147462579), **kwargs):
+
 		self._srng = np.random.RandomState(seed)
 		self.mean = mean
 		self.log_var = log_var
@@ -22,7 +23,7 @@ class SimpleSampleLayer():
 
 		mu = self.mean
 		log_var = self.log_var
-        eps = self._srng.normal(size = mu.shape)
+        eps = self._srng.normal(size=mu.shape)
         z = mu + tf.exp(0.5 * log_var) * eps
         if deterministic:
             z = mu

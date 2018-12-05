@@ -1,6 +1,6 @@
 import tensorflow as tf
 import numpy as np 
-from siamese_tf import Siamese
+from siamese_tf import Siamese, SiameseConv
 
 import matplotlib.pyplot as plt
 
@@ -15,6 +15,7 @@ replay_size = 100000
 replay = np.concatenate([np.random.randn(replay_size // 2) - 4, np.random.randn(replay_size // 2) + 4])
 replay = np.expand_dims(replay, 1).astype(np.float32)
 siamese = Siamese(1, 4, (32, 32), learning_rate=1e-3)
+convv = SiameseConv(1, (32, 32), 28, 28, learning_rate=1e-3)
 positives_np = np.expand_dims(np.linspace(-8, 8, 200).astype(np.float32), 1)
 positives = positives_np
 labels = np.expand_dims(np.concatenate([np.ones(batch_size), np.zeros(batch_size)]), 1).astype(np.float32)

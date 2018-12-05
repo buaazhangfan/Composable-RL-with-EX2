@@ -15,11 +15,12 @@ class SimpleSampleLayer():
 		self._srng = np.random.RandomState(seed=seed)
 		self.mean = mean
 		self.log_var = log_var
+		self.seed = seed
 
 	def get_output_for(self):
 	
 		# eps = self._srng.normal(size=self.mean.shape)
-		eps = tf.random_normal(shape = tf.shape(self.mean))
+		eps = tf.random_normal(shape = tf.shape(self.mean), seed=self.seed)
 		return self.mean + tf.exp(0.5 * self.log_var) * eps
 
 
@@ -49,7 +50,7 @@ class MLP():
 		return self.out_layer
 
 
-class Siamese:
+class Siamese():
 	def __init__(self,input_dim, feature_dim, hidden_sizes,
 				 l2_reg=0, hidden_act=tf.tanh, learning_rate=1e-4,
 				 kl_weight=1,
@@ -105,13 +106,12 @@ class Siamese:
 
 		self.vae_before_sig_output = self.class_net.before_sig
 
-		self.loss = self.latent_gaussian_x_bernoulli(combined_z, combined_z_mu, combined_z_log_var, self.vae_before_sig_output, self.label, self.kl_weight)
-		self.loss *= -1
+		self.loss = -self.latent_gaussian_x_bernoulli(combined_z, combined_z_mu, combined_z_log_var, self.vae_before_sig_output, self.label, self.kl_weight)
 		self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(self.loss)
 
 	def kl_normal2_stdnormal(self, mean, log_var):
 
-		return -0.5 * (1 + log_var - mean ** 2 - tf.exp(log_var))
+		return - 0.5 * (1 + log_var - mean ** 2 - tf.exp(log_var))
 
 	def log_bernoulli(self, output, label, eps=0.0):
 
@@ -141,6 +141,7 @@ class Siamese:
 		dis_output = self.sess.run(self.vae_output, feed_dict = {self.lin1: input_1, self.lin2: input_2})
 		dis_output = np.clip(np.squeeze(dis_output), 1e-5, 1-1e-5)
 		prob = (1 - dis_output) / (dis_output)
+
 		return prob
 
 

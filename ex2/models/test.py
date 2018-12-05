@@ -10,7 +10,7 @@ def sample_batch(data, data_size, batch_size):
     return data[idxs]
 
 train_itrs=40000
-batch_size=512
+batch_size=64
 replay_size = 100000
 replay = np.concatenate([np.random.randn(replay_size // 2) - 4, np.random.randn(replay_size // 2) + 4])
 replay = np.expand_dims(replay, 1).astype(np.float32)

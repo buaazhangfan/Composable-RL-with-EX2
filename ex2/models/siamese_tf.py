@@ -34,7 +34,8 @@ class MLP():
                  params=None,
                  batch_norm=False,
                  dropout=False):
-        out_layer = input_layer
+        
+		out_layer = input_layer
         param_idx = 0
 
         for hidden_size in hidden_sizes:
@@ -47,13 +48,16 @@ class MLP():
             if dropout:
                 out_layer = tf.layers.dropout(out_layer)
 
-		self.last_layer = out_layer
+		self.before_sig_layer = out_layer
         out_layer = tf.layers.dense(out_layer, output_dim, activation=output_act)
 
         self.out_layer = out_layer
-    
+    def before_sig_layer(self):
+		return self.before_sig_layer
+
     def output_layer(self):
         return self.out_layer
+
 
 class Siamese:
     def __init__(self, input_dim, feature_dim, hidden_sizes,
@@ -101,10 +105,22 @@ class Siamese:
         self.class_net = MLP(combined_z, 1, hidden_sizes, hidden_act=hidden_act, output_act=tf.sigmoid)
 
         self.vae_output = self.class_net.output_layer()
+		self.vae_before_sig_output = self.class_net.before_sig_layer()
+
+		self.loss = self.latent_gaussian_x_bernoulli()
 
 	def kl_normal2_stdnormal(mean, log_var):
 
 		return -0.5 * (1 + log_var - mean ** 2 - tf.exp(log_var))
 
 	def log_bernoulli(output, label, eps=0.0):
-		vae_output = tf.clip_by_value(output, eps, 1.0 - eps)
+
+		return - tf.nn.sigmoid_cross_entropy_with_logits(labels=label, logits=output)
+
+	def latent_gaussian_x_bernoulli(z, z_mu, z_log_var, output, label, kl_weight):
+		kl_term = tf.reduce_sum(self.kl_normal2_stdnormal(z_mu, z_log_var),axis = 1)
+		log_px_given_z = tf.reduce_sum(self.log_bernoulli(output, label, eps=1e-6), axis = 1)
+		Loss = tf.reduce_mean((-kl_term) * kl_weight + log_px_given_z)
+
+		return Loss
+	

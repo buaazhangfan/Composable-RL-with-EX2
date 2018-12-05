@@ -9,8 +9,8 @@ def sample_batch(data, data_size, batch_size):
 
     return data[idxs]
 
-train_itrs=40000
-batch_size=64
+train_itrs = 40000
+batch_size = 512
 replay_size = 100000
 replay = np.concatenate([np.random.randn(replay_size // 2) - 4, np.random.randn(replay_size // 2) + 4])
 replay = np.expand_dims(replay, 1).astype(np.float32)
@@ -29,8 +29,6 @@ siamese.init_tf_sess()
 for train_itr in range(train_itrs):
 
     pos = sample_batch(positives, positives.shape[0], batch_size)
-    # print(pos.shape)
-    # exit()
     neg = sample_batch(replay, replay.shape[0], batch_size)
     x1 = np.concatenate([pos, pos])
     x2 = np.concatenate([pos, neg])

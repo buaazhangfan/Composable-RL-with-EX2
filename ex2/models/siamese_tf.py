@@ -11,13 +11,17 @@ def sample_batch(data, data_size, batch_size):
 class SimpleSampleLayer():
 
     def __init__(self, mean, log_var, seed=np.random.randint(1, 2147462579), **kwargs):
-        self._srng = np.random.RandomState(seed)
+		self._srng = np.random.RandomState(seed)
+		self.mean = mean
+		self.log_var = log_var
 
-    def seed(self, seed=np.random.randint(1, 2147462579)):
-        self._srng.seed(seed)
+    # def seed(self, seed=np.random.randint(1, 2147462579)):
+    #     self._srng.seed(seed)
     
-    def get_output_for(self, input, deterministic=False):
-        mu, log_var = input
+    def get_output_for(self, deterministic=False):
+
+		mu = self.mean
+		log_var = self.log_var
         eps = self._srng.normal(size = mu.shape)
         z = mu + tf.exp(0.5 * log_var) * eps
         if deterministic:
@@ -30,7 +34,7 @@ class MLP():
     def __init__(self, input_layer, output_dim, hidden_sizes, hidden_act=tf.tanh, output_act=tf.identity, params=None, batch_norm=False, dropout=False):
 		
 		out_layer = input_layer
-		param_idx = 0
+		# param_idx = 0
 
         for hidden_size in hidden_sizes:
 
@@ -92,8 +96,10 @@ class Siamese:
         l2_mu = self.mean_net2.output_layer()
         l2_log_var = self.logvar_net2.output_layer()
 
-        l1_z = SimpleSampleLayer(l1_mu, l1_log_var)
-        l2_z = SimpleSampleLayer(l2_mu, l2_log_var)
+        l1_z = SimpleSampleLayer(l1_mu, l1_log_var).get_output_for()
+        l2_z = SimpleSampleLayer(l2_mu, l2_log_var).get_output_for()
+
+		
 
         combined_z = tf.concat([l1_z, l2_z], axis = 1)
 		combined_z_mu = tf.concat([l1_mu, l2_mu], axis = 1)

@@ -1,4 +1,4 @@
-import numpy as numpy
+import numpy as np
 import tensorflow as tf
 from ex2.utils.distributions import log_stdnormal, log_normal2, log_bernoulli, kl_normal2_stdnormal
 from ex2.utils.theano_utils import compile_timer
@@ -26,12 +26,6 @@ class SimpleSampleLayer():
 
         return z
 
-
-    def get_output_for(self, inputs, **kwargs):
-        a, b = inputs
-        sim = tf.reshape((tf.reduce_sum((a * b), axis = -1) / tf.norm(a, ord=2, axis=-1) / tf.norm(b, ord=2, axis=-1)), [-1, 1])
-
-        return sim
 
 class MLP():
     def __init__(self, input_layer, output_dim, hidden_sizes,

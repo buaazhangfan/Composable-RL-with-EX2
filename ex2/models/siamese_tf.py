@@ -73,7 +73,8 @@ class Siamese():
 				 l2_reg=0, hidden_act=tf.tanh, learning_rate=1e-4,
 				 kl_weight=1,
 				 batch_norm=False,
-				 dropout=False):
+				 dropout=False,
+                 seed=200):
 		
 		self.input_dim = input_dim
 		self.feature_dim = feature_dim
@@ -83,6 +84,7 @@ class Siamese():
 		self.batch_norm = batch_norm
 		self.dropout = dropout
 		self.kl_weight = kl_weight
+        self.seed = seed
 
 		self.build_graph()
 	
@@ -111,8 +113,8 @@ class Siamese():
 		l2_mu = self.mean_net2.output_layer()
 		l2_log_var = self.logvar_net2.output_layer()
 
-		l1_z = SimpleSampleLayer(mean=l1_mu, log_var=l1_log_var).get_output_for()
-		l2_z = SimpleSampleLayer(mean=l2_mu, log_var=l2_log_var).get_output_for()
+		l1_z = SimpleSampleLayer(mean=l1_mu, log_var=l1_log_var, seed= self.seed).get_output_for()
+		l2_z = SimpleSampleLayer(mean=l2_mu, log_var=l2_log_var, seed= self.seed).get_output_for()
 
 		
 

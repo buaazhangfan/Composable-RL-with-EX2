@@ -1,0 +1,64 @@
+digraph G {
+    graph [rankdir=TB, clusterrank="local"];
+    subgraph cluster_G {
+
+        graph [style="filled,rounded",fillcolor="#80808018", label=""];
+        run_dqn_ram [label="run_dqn_ram", style="filled", fillcolor="#ffffffb2", fontcolor="#000000", group="0"];
+        subgraph cluster_run_dqn_ram {
+
+            graph [style="filled,rounded",fillcolor="#80808018", label="run_dqn_ram"];
+            run_dqn_ram__atari_learn [label="atari_learn\n(run_dqn_ram.py:27)", style="filled", fillcolor="#feccccb2", fontcolor="#000000", group="0"];
+        }
+        subgraph cluster_run_dqn_ram {
+
+            graph [style="filled,rounded",fillcolor="#80808018", label="run_dqn_ram"];
+            run_dqn_ram__atari_model [label="atari_model\n(run_dqn_ram.py:15)", style="filled", fillcolor="#feccccb2", fontcolor="#000000", group="0"];
+        }
+        subgraph cluster_run_dqn_ram {
+
+            graph [style="filled,rounded",fillcolor="#80808018", label="run_dqn_ram"];
+            run_dqn_ram__get_available_gpus [label="get_available_gpus\n(run_dqn_ram.py:77)", style="filled", fillcolor="#feccccb2", fontcolor="#000000", group="0"];
+        }
+        subgraph cluster_run_dqn_ram {
+
+            graph [style="filled,rounded",fillcolor="#80808018", label="run_dqn_ram"];
+            run_dqn_ram__get_env [label="get_env\n(run_dqn_ram.py:101)", style="filled", fillcolor="#feccccb2", fontcolor="#000000", group="0"];
+        }
+        subgraph cluster_run_dqn_ram {
+
+            graph [style="filled,rounded",fillcolor="#80808018", label="run_dqn_ram"];
+            run_dqn_ram__get_session [label="get_session\n(run_dqn_ram.py:92)", style="filled", fillcolor="#feccccb2", fontcolor="#000000", group="0"];
+        }
+        subgraph cluster_run_dqn_ram {
+
+            graph [style="filled,rounded",fillcolor="#80808018", label="run_dqn_ram"];
+            run_dqn_ram__main [label="main\n(run_dqn_ram.py:113)", style="filled", fillcolor="#feccccb2", fontcolor="#000000", group="0"];
+        }
+        subgraph cluster_run_dqn_ram {
+
+            graph [style="filled,rounded",fillcolor="#80808018", label="run_dqn_ram"];
+            run_dqn_ram__set_global_seeds [label="set_global_seeds\n(run_dqn_ram.py:82)", style="filled", fillcolor="#feccccb2", fontcolor="#000000", group="0"];
+        }
+        subgraph cluster_run_dqn_ram__atari_learn {
+
+            graph [style="filled,rounded",fillcolor="#80808018", label="run_dqn_ram.atari_learn"];
+            run_dqn_ram__atari_learn__stopping_criterion [label="stopping_criterion\n(run_dqn_ram.py:46)", style="filled", fillcolor="#ff9999b2", fontcolor="#000000", group="0"];
+        }
+    }
+        run_dqn_ram -> run_dqn_ram__set_global_seeds [style="dashed", color="#838b8b"];
+        run_dqn_ram -> run_dqn_ram__get_available_gpus [style="dashed", color="#838b8b"];
+        run_dqn_ram -> run_dqn_ram__main [style="dashed", color="#838b8b"];
+        run_dqn_ram -> run_dqn_ram__get_session [style="dashed", color="#838b8b"];
+        run_dqn_ram -> run_dqn_ram__atari_model [style="dashed", color="#838b8b"];
+        run_dqn_ram -> run_dqn_ram__get_env [style="dashed", color="#838b8b"];
+        run_dqn_ram -> run_dqn_ram__atari_learn [style="dashed", color="#838b8b"];
+        run_dqn_ram__atari_learn -> run_dqn_ram__atari_learn__stopping_criterion [style="dashed", color="#838b8b"];
+        run_dqn_ram -> run_dqn_ram__main [style="solid", color="#000000"];
+        run_dqn_ram__atari_learn -> run_dqn_ram__atari_model [style="solid", color="#000000"];
+        run_dqn_ram__atari_learn -> run_dqn_ram__atari_learn__stopping_criterion [style="solid", color="#000000"];
+        run_dqn_ram__get_session -> run_dqn_ram__get_available_gpus [style="solid", color="#000000"];
+        run_dqn_ram__get_env -> run_dqn_ram__set_global_seeds [style="solid", color="#000000"];
+        run_dqn_ram__main -> run_dqn_ram__get_session [style="solid", color="#000000"];
+        run_dqn_ram__main -> run_dqn_ram__get_env [style="solid", color="#000000"];
+        run_dqn_ram__main -> run_dqn_ram__atari_learn [style="solid", color="#000000"];
+    }

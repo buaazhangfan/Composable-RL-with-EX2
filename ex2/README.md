@@ -22,8 +22,8 @@ The starter code was based on an implementation of Q-learning for Atari generous
 # Instructions for Composable Soft Q Learning
 
 ```ruby
-python run_dqn_vizdoom.py --vizdoom --explore soft_q --env_path /Users/wangyujie/Desktop/iProud/iCourse/US/294-Reinforcement_Learning/Group_Project/DirectFuturePrediction/maps/D1_basic.cfg
-python run_dqn_vizdoom.py --vizdoom --explore soft_q --ex2 --coef 1e-4 --env_path /Users/wangyujie/Desktop/iProud/iCourse/US/294-Reinforcement_Learning/Group_Project/DirectFuturePrediction/maps/D1_basic.cfg
+python run_dqn_vizdoom.py --vizdoom --explore soft_q --env_path ./maps/D1_basic.cfg
+python run_dqn_vizdoom.py --vizdoom --explore soft_q --ex2 --coef 1e-4 --env_path ./maps/D1_basic.cfg
 ```
 
 ## Cheers!

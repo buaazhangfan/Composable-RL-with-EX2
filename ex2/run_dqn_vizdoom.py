@@ -158,7 +158,7 @@ def initialize_vizdoom(config_file_path, seed):
     print("Initializing doom...")
     game = vzd.DoomGame()
     game.load_config(config_file_path)
-    game.set_window_visible(False)
+    game.set_window_visible(True)
     game.set_mode(vzd.Mode.PLAYER)
     game.set_screen_format(vzd.ScreenFormat.GRAY8)
     game.set_screen_resolution(vzd.ScreenResolution.RES_640X480)

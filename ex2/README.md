@@ -18,3 +18,12 @@ The only files that you need to look at are `dqn.py` and `train_ac_f18.py`, whic
 See the [HW3 PDF](http://rail.eecs.berkeley.edu/deeprlcourse/static/homeworks/hw3.pdf) for further instructions.
 
 The starter code was based on an implementation of Q-learning for Atari generously provided by Szymon Sidor from OpenAI.
+
+# Instructions for Composable Soft Q Learning
+
+```ruby
+python run_dqn_vizdoom.py --vizdoom --explore soft_q --env_path /Users/wangyujie/Desktop/iProud/iCourse/US/294-Reinforcement_Learning/Group_Project/DirectFuturePrediction/maps/D1_basic.cfg
+python run_dqn_vizdoom.py --vizdoom --explore soft_q --ex2 --coef 1e-4 --env_path /Users/wangyujie/Desktop/iProud/iCourse/US/294-Reinforcement_Learning/Group_Project/DirectFuturePrediction/maps/D1_basic.cfg
+```
+
+## Cheers!

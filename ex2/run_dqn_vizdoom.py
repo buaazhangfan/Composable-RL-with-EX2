@@ -190,7 +190,8 @@ def main():
     # Get Vizdoom games.
     # Create Doom instance
     # DEFAULT_CONFIG = "/home/FanZhang/Reinforcement_Learning_Assignment/Ex2_Q/ViZDoom/scenarios/simpler_basic.cfg"
-    DEFAULT_CONFIG = '/Users/wangyujie/Desktop/iProud/iCourse/US/294-Reinforcement_Learning/Group_Project/DirectFuturePrediction/maps/D1_basic.cfg'
+    # DEFAULT_CONFIG = '/Users/wangyujie/Desktop/iProud/iCourse/US/294-Reinforcement_Learning/Group_Project/DirectFuturePrediction/maps/D1_basic.cfg'
+    DEFAULT_CONFIG = args.env_path
     game = initialize_vizdoom(DEFAULT_CONFIG, seed)
     print('using game vizdoom')
 

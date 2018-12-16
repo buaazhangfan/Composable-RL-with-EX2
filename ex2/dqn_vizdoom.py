@@ -66,7 +66,8 @@ class QLearner(object):
     seed=250,
     eval=False,
     vizdoom=False,
-    model_path=None):
+    model_path=None,
+    subgame=None):
     """Run Deep Q-learning algorithm.
 
     You can specify your own convnet using q_func.
@@ -123,6 +124,7 @@ class QLearner(object):
     # Different setting for gym and vizdoom
     self.vizdoom = vizdoom
     self.model_path = model_path
+    self.subgame = subgame
 
     if not self.vizdoom:
         assert type(env.observation_space) == gym.spaces.Box
@@ -767,13 +769,19 @@ class QLearner(object):
                   self.env.new_episode()
                   train_episodes_finished += 1
 
-                  if score > best_score:
-                      best_score = score
-                      if self.model_initialized and not self.eval:
-                          # store the best model
-                          # save_path = self.saver.save(self.session, "./bstmodel/Vizdoom_model")
-                          save_path = self.saver.save(self.session, self.model_path)
-                          print("Model saved in path: %s" % save_path)
+                  if not self.subgame == 'shoot_monster':
+                      if score > best_score:
+                          best_score = score
+                          if self.model_initialized and not self.eval:
+                              # store the best model
+                              # save_path = self.saver.save(self.session, "./bstmodel/Vizdoom_model")
+                              save_path = self.saver.save(self.session, self.model_path)
+                              print("Model saved in path: %s" % save_path)
+          # Add diversity for shoot_monster since it only has a monster to kill, so max is 300.
+          if self.subgame == 'shoot_monster':
+              if not self.eval:
+                    save_path = self.saver.save(self.session, self.model_path)
+                    print("Model saved in path: %s" % save_path)
           print("%d training episodes played." % train_episodes_finished)
           train_scores = np.array(train_scores)
           logging.basicConfig(filename='myapp.log', level=logging.INFO)

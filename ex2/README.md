@@ -22,7 +22,7 @@ The starter code was based on an implementation of Q-learning for Atari generous
 # Instructions for Composable Soft Q Learning
 
 ```ruby
-python run_dqn_vizdoom.py --vizdoom --explore e-greedy --subgame shoot_monsters
+python run_dqn_vizdoom.py --vizdoom --explore e-greedy --subgame shoot_monster
 python run_dqn_vizdoom.py --vizdoom --explore soft_q --subgame avoid_shooters
 python run_dqn_vizdoom.py --vizdoom --explore soft_q --ex2 --coef 1e-4 --subgame avoid_shooters
 ```

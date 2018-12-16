@@ -1,0 +1,2 @@
+model_checkpoint_path: "soft_q_False_0.01_"
+all_model_checkpoint_paths: "soft_q_False_0.01_"

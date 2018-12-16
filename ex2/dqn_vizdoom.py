@@ -154,7 +154,7 @@ class QLearner(object):
     self.count = 0
     self.seed = seed
     self.eval = eval
-    self.log_name = str(uuid.uuid4()) + '_' + self.explore + 'ex2_' + str(self.ex2) + 'coef_' + str(self.coef) + '.log'
+    self.log_name = str(uuid.uuid4()) + '_' + subgame + '_' + self.explore + 'ex2_' + str(self.ex2) + 'coef_' + str(self.coef) + '.log'
     print('eval?', self.eval)
     print('exploration strategy', explore)
     print('using ex2', ex2)

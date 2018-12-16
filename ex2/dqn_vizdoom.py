@@ -786,7 +786,7 @@ class QLearner(object):
                     print("Model saved in path: %s" % save_path)
           print("%d training episodes played." % train_episodes_finished)
           train_scores = np.array(train_scores)
-          logging.basicConfig(filename='myapp.log', level=logging.INFO)
+          # logging.basicConfig(filename='myapp.log', level=logging.INFO)
           logging.info("Results mean: {} and Result std: {}".format(train_scores.mean(), train_scores.std()))
           print("Results: mean: %.1f +- %.1f," % (train_scores.mean(), train_scores.std()), \
                 "min: %.1f," % train_scores.min(), "max: %.1f," % train_scores.max())

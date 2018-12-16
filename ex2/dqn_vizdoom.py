@@ -154,6 +154,7 @@ class QLearner(object):
     self.count = 0
     self.seed = seed
     self.eval = eval
+    self.log_name = str(uuid.uuid4()) + '_' + self.explore + 'ex2_' + str(self.ex2) + 'coef_' + str(self.coef) + '.log'
     print('eval?', self.eval)
     print('exploration strategy', explore)
     print('using ex2', ex2)
@@ -755,7 +756,8 @@ class QLearner(object):
           print("\nEpoch %d\n-------" % (epoch + 1))
           train_episodes_finished = 0
           train_scores = []
-
+          logging.basicConfig(filename=self.log_name, level=logging.INFO)
+          logging.info("Current epoch is {}".format(epoch))
           print("Training...")
           self.env.new_episode()
           for learning_step in trange(learning_steps_per_epoch, leave=False):
@@ -785,7 +787,7 @@ class QLearner(object):
           print("%d training episodes played." % train_episodes_finished)
           train_scores = np.array(train_scores)
           logging.basicConfig(filename='myapp.log', level=logging.INFO)
-          logging.info("Results mean: {} and Result sta: {}".format(train_scores.mean(), train_scores.std()))
+          logging.info("Results mean: {} and Result std: {}".format(train_scores.mean(), train_scores.std()))
           print("Results: mean: %.1f +- %.1f," % (train_scores.mean(), train_scores.std()), \
                 "min: %.1f," % train_scores.min(), "max: %.1f," % train_scores.max())
           print("best_score", best_score)

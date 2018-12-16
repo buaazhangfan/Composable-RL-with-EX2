@@ -788,9 +788,11 @@ class QLearner(object):
           train_scores = np.array(train_scores)
           # logging.basicConfig(filename='myapp.log', level=logging.INFO)
           logging.info("Results mean: {} and Result std: {}".format(train_scores.mean(), train_scores.std()))
+          logging.info("min is {} and max is {}".format(train_scores.min(), train_scores.max()))
           print("Results: mean: %.1f +- %.1f," % (train_scores.mean(), train_scores.std()), \
                 "min: %.1f," % train_scores.min(), "max: %.1f," % train_scores.max())
           print("best_score", best_score)
+          logging.info("The best result score is {}".format(best_score))
           if 0:
               print("\nTesting...")
               test_episode = []

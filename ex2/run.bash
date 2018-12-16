@@ -1,5 +1,22 @@
 #!/bin/bash
-# python3 run_dqn_lander.py --explore soft_q
-python3 run_dqn_lander.py --explore soft_q --ex2 --coef 0.01
-python3 run_dqn_lander.py --explore soft_q --ex2 --coef 0.001
-python3 run_dqn_lander.py --explore soft_q --ex2 --coef 0.0001
+
+python run_dqn_vizdoom.py --vizdoom --explore e-greedy --subgame shoot_monster
+python run_dqn_vizdoom.py --vizdoom --explore soft_q --subgame shoot_monster
+python run_dqn_vizdoom.py --vizdoom --explore soft_q --ex2 --coef 1e-2 --subgame shoot_monster
+
+
+python run_dqn_vizdoom.py --vizdoom --explore e-greedy --subgame avoid_shooters
+python run_dqn_vizdoom.py --vizdoom --explore soft_q --subgame avoid_shooters
+python run_dqn_vizdoom.py --vizdoom --explore soft_q --ex2 --coef 1e-2 --subgame avoid_shooters
+
+
+python run_dqn_vizdoom.py --vizdoom --explore e-greedy --subgame avoid+shoot
+python run_dqn_vizdoom.py --vizdoom --explore soft_q --subgame avoid+shoot
+python run_dqn_vizdoom.py --vizdoom --explore soft_q --ex2 --coef 1e-2 --subgame avoid+shoot
+
+# python run_dqn_vizdoom.py --vizdoom --explore soft_q --ex2 --coef 1e-3 --subgame shoot_monster
+# python run_dqn_vizdoom.py --vizdoom --explore soft_q --ex2 --coef 1e-4 --subgame shoot_monster
+# python run_dqn_vizdoom.py --vizdoom --explore soft_q --ex2 --coef 1e-3 --subgame avoid_shooters
+# python run_dqn_vizdoom.py --vizdoom --explore soft_q --ex2 --coef 1e-4 --subgame avoid_shooters
+# python run_dqn_vizdoom.py --vizdoom --explore soft_q --ex2 --coef 1e-3 --subgame avoid+shoot
+# python run_dqn_vizdoom.py --vizdoom --explore soft_q --ex2 --coef 1e-4 --subgame avoid+shoot

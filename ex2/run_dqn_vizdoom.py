@@ -116,7 +116,7 @@ def vizdoom_learn(game,
         seed=seed,
         eval= evaluation,
         vizdoom=vizdoom,
-        model_path= './bstmodel/'+subgame+'/'+explore+'_'+str(ex2)+'_'+str(coef)+'_'+time.strftime("%d-%m-%Y_%H-%M-%S"),
+        model_path= './bstmodel/'+subgame+'/'+explore+'_'+str(ex2)+'_'+str(coef)+'_'+time.strftime("%d-%m-%Y_%H-%M-%S")+'/'+explore+'_'+str(ex2)+'_'+str(coef)+'_',
         subgame = subgame,
         # model_path = './bstmodel/hhh'
     )

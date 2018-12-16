@@ -14,6 +14,9 @@ from dqn_utils import *
 import vizdoom as vzd
 from tqdm import trange
 
+epochs = 500
+learning_steps_per_epoch = 2000
+
 def vizdoom_model(img_in, num_actions, scope, reuse=False, dropout=False, keep_prob=1.0):
     # as described in https://storage.googleapis.com/deepmind-data/assets/papers/DeepMindNature14236Paper.pdf
     with tf.variable_scope(scope, reuse=reuse):
@@ -84,7 +87,7 @@ def vizdoom_learn(game,
     exploration_schedule = PiecewiseSchedule(
         [
             (0, 1.0),
-            (0.6*16e4, 0.1),
+            (0.6*num_timesteps, 0.1),
         ], outside_value=0.1
     )
 
@@ -116,8 +119,10 @@ def vizdoom_learn(game,
         seed=seed,
         eval= evaluation,
         vizdoom=vizdoom,
-        model_path= './bstmodel/'+subgame+'/'+explore+'_'+str(ex2)+'_'+str(coef)+'_'+time.strftime("%d-%m-%Y_%H-%M-%S")+'/'+explore+'_'+str(ex2)+'_'+str(coef)+'_',
+        model_path= './bstmodel/'+subgame+'/'+explore+'_'+str(ex2)+'_'+str(coef)+'_'+time.strftime("%d-%m-%Y_%H-%M-%S")+'/'+explore+'_'+str(ex2)+'_'+str(coef),
         subgame = subgame,
+        epochs=epochs,
+        learning_steps_per_epoch=learning_steps_per_epoch
         # model_path = './bstmodel/hhh'
     )
     game.close()
@@ -202,7 +207,7 @@ def main():
     
     # OMG, 200M Maximum steps
     # TO-DO: num_timesteps need to be changed, here 8e4 = epochs * it_per_epochs
-    vizdoom_learn(game, session, num_timesteps=16e4, vizdoom = args.vizdoom, double_q=args.double_q, 
+    vizdoom_learn(game, session, num_timesteps=epochs*learning_steps_per_epoch, vizdoom = args.vizdoom, double_q=args.double_q, 
                   explore=args.explore, ex2=args.ex2, coef=args.coef, seed=seed, evaluation=args.eval,
                   subgame=args.subgame)
 

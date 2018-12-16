@@ -19,8 +19,6 @@ import logging
 
 frame_repeat = 12
 resolution = (30, 45)
-epochs = 80
-learning_steps_per_epoch = 2000
 test_episodes_per_epoch = 100
 
 def set_global_seeds(i):
@@ -67,7 +65,9 @@ class QLearner(object):
     eval=False,
     vizdoom=False,
     model_path=None,
-    subgame=None):
+    subgame=None,
+    epochs=None,
+    learning_steps_per_epoch=None):
     """Run Deep Q-learning algorithm.
 
     You can specify your own convnet using q_func.
@@ -125,6 +125,8 @@ class QLearner(object):
     self.vizdoom = vizdoom
     self.model_path = model_path
     self.subgame = subgame
+    self.epochs = epochs
+    self.learning_steps_per_epoch = learning_steps_per_epoch
 
     if not self.vizdoom:
         assert type(env.observation_space) == gym.spaces.Box
@@ -752,7 +754,7 @@ class QLearner(object):
 
   def train_test(self):
       best_score = -float('inf')
-      for epoch in range(epochs):
+      for epoch in range(self.epochs):
           print("\nEpoch %d\n-------" % (epoch + 1))
           train_episodes_finished = 0
           train_scores = []
@@ -760,7 +762,7 @@ class QLearner(object):
           logging.info("Current epoch is {}".format(epoch))
           print("Training...")
           self.env.new_episode()
-          for learning_step in trange(learning_steps_per_epoch, leave=False):
+          for learning_step in trange(self.learning_steps_per_epoch, leave=False):
               self.step_env()
               if not self.eval:
                   self.update_model()

@@ -48,7 +48,8 @@ def vizdoom_learn(game,
                   coef,
                   vizdoom,
                   seed,
-                  evaluation):
+                  evaluation,
+                  subgame):
     # This is just a rough estimate
     num_iterations = float(num_timesteps) / 4.0
 
@@ -115,8 +116,8 @@ def vizdoom_learn(game,
         seed=seed,
         eval= evaluation,
         vizdoom=vizdoom,
-        model_path= './bstmodel/vizdoom_'+time.strftime("%d-%m-%Y_%H-%M-%S")
-        # model_path = './bstmodel/vizdoom_12-12-2018_01-28-25'
+        model_path= './bstmodel/'+subgame+'/'+explore+str(ex2)+str(coef)
+        # model_path = './bstmodel/hhh'
     )
     game.close()
 
@@ -158,7 +159,7 @@ def initialize_vizdoom(config_file_path, seed):
     print("Initializing doom...")
     game = vzd.DoomGame()
     game.load_config(config_file_path)
-    game.set_window_visible(True)
+    game.set_window_visible(False)
     game.set_mode(vzd.Mode.PLAYER)
     game.set_screen_format(vzd.ScreenFormat.GRAY8)
     game.set_screen_resolution(vzd.ScreenResolution.RES_640X480)
@@ -178,7 +179,7 @@ def main():
     parser.add_argument('--explore', type=str, default='e-greedy')
     parser.add_argument('--ex2', action='store_true')
     parser.add_argument('--coef', type=float, default=0.01)
-    parser.add_argument('--env_path', type=str, default='/Users/wangyujie/Desktop/iProud/iCourse/US/294-Reinforcement_Learning/Group_Project/DirectFuturePrediction/maps/D1_basic.cfg')
+    parser.add_argument('--subgame', type=str, default='avoid_shooters')
     args = parser.parse_args()
     
     # Run training
@@ -191,7 +192,7 @@ def main():
     # Create Doom instance
     # DEFAULT_CONFIG = "/home/FanZhang/Reinforcement_Learning_Assignment/Ex2_Q/ViZDoom/scenarios/simpler_basic.cfg"
     # DEFAULT_CONFIG = '/Users/wangyujie/Desktop/iProud/iCourse/US/294-Reinforcement_Learning/Group_Project/DirectFuturePrediction/maps/D1_basic.cfg'
-    DEFAULT_CONFIG = args.env_path
+    DEFAULT_CONFIG = './maps/'+args.subgame+'.cfg'
     game = initialize_vizdoom(DEFAULT_CONFIG, seed)
     print('using game vizdoom')
 
@@ -201,7 +202,8 @@ def main():
     # OMG, 200M Maximum steps
     # TO-DO: num_timesteps need to be changed, here 8e4 = epochs * it_per_epochs
     vizdoom_learn(game, session, num_timesteps=16e4, vizdoom = args.vizdoom, double_q=args.double_q, 
-                  explore=args.explore, ex2=args.ex2, coef=args.coef, seed=seed, evaluation=args.eval)
+                  explore=args.explore, ex2=args.ex2, coef=args.coef, seed=seed, evaluation=args.eval,
+                  subgame=args.subgame)
 
 if __name__ == "__main__":
     main()

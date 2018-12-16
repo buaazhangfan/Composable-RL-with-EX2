@@ -6,3 +6,4 @@ tensorflow
 numpy
 seaborn
 opencv-python
+Vizdoom

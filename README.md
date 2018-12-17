@@ -16,10 +16,9 @@ Dependencies:
 
 Before doing anything, first replace `gym/envs/box2d/lunar_lander.py` with the provided `lunar_lander.py` file.
 
-The only files that you need to look at are `dqn.py` and `train_ac_f18.py`, which you will implement.
+The code was based on an implementation of Q-learning in HW3.
 
-
-The starter code was based on an implementation of Q-learning for Atari generously provided by Szymon Sidor from OpenAI.
+This code can support Atari games and Vizdoom environments.
 
 # Instructions for Composable Soft Q Learning
 
